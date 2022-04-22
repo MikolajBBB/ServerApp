@@ -16,6 +16,23 @@ public class ServerStarter extends Application {
         stage.setTitle("Server");
         stage.setScene(scene);
         stage.show();
+        ServerSocket serverSocket = new ServerSocket(6868);
+        new Thread() { //oddzielny wątek ,żeby watek okienka z acceptem nie wchodziły sb w glowe
+            @Override
+            public void run() {
+
+                for (int i=0;i<5;i++) {
+                    System.out.println("Connected");
+                    try {
+
+                        Socket socket = serverSocket.accept();
+
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }.start();
     }
 
     public static void main(String[] args) {
