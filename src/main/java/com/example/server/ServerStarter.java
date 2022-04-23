@@ -25,9 +25,6 @@ public class ServerStarter extends Application {
         BlockingQueue<Odpowiedz> kolejka = new ArrayBlockingQueue<>(50);
         Konsument konsument = new Konsument(kolejka, fxmlLoader.getController());
         new Thread(konsument).start();
-        Producent producent = new Producent(kolejka);
-        new Thread(producent).start();
-        new Thread(producent).start();
         new Thread() { //oddzielny wątek ,żeby watek okienka z acceptem nie wchodziły sb w glowe
             @Override
             public void run() {
@@ -36,6 +33,8 @@ public class ServerStarter extends Application {
                     try {
                         Socket socket = serverSocket.accept();
                         System.out.println("Connected new client");
+                        Producent producent = new Producent(kolejka,socket);
+                        new Thread(producent).start();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
