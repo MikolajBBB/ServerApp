@@ -1,24 +1,36 @@
 package com.example.server;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 public class Konsument implements Runnable {
     BlockingQueue<Odpowiedz> kolejka;
+    Controller controller;
 
-    public Konsument(BlockingQueue<Odpowiedz> kolejka) {
+    Map<String, String> pytanieOdpowiedz = preparePytanieOdpowiedzMap();
+
+    public Konsument(BlockingQueue<Odpowiedz> kolejka, Controller controller) {
         this.kolejka = kolejka;
+        this.controller = controller;
     }
 
 
     @Override
     public void run() {
         try {
-            Thread.sleep(500);
-            while (!kolejka.isEmpty()) {
-                System.out.println(kolejka.take().getTresc());
+            while (true) {
+                controller.appendText(kolejka.take().getTresc());
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    Map<String, String> preparePytanieOdpowiedzMap() {
+        Map<String, String> result = new HashMap<>();
+        result.put("Stolica Polski?", "Warszawa");
+        result.put("Najlepszy jezyk programowania?", "Kotlin");
+        return result;
     }
 }

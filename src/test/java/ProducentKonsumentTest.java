@@ -13,7 +13,7 @@ public class ProducentKonsumentTest {
     void test() throws InterruptedException {
         BlockingQueue<Odpowiedz> kolejka = new ArrayBlockingQueue<>(50);
         Producent producent = new Producent(kolejka);
-        Konsument konsument = new Konsument(kolejka);
+        Konsument konsument = new Konsument(kolejka,null);
         new Thread(producent).start();
         new Thread(producent).start();
         new Thread(producent).start();

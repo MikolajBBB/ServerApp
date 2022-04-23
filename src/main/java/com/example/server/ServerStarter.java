@@ -7,6 +7,9 @@ import javafx.stage.Stage;
 import java.net.*;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -14,21 +17,25 @@ public class ServerStarter extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(ServerStarter.class.getResource("hello-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
+        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
         stage.setTitle("Server");
         stage.setScene(scene);
         stage.show();
         ServerSocket serverSocket = new ServerSocket(6868);
+        BlockingQueue<Odpowiedz> kolejka = new ArrayBlockingQueue<>(50);
+        Konsument konsument = new Konsument(kolejka, fxmlLoader.getController());
+        new Thread(konsument).start();
+        Producent producent = new Producent(kolejka);
+        new Thread(producent).start();
+        new Thread(producent).start();
         new Thread() { //oddzielny wątek ,żeby watek okienka z acceptem nie wchodziły sb w glowe
             @Override
             public void run() {
 
-                for (int i=0;i<5;i++) {
-                    System.out.println("Connected");
+                while (true){
                     try {
-
                         Socket socket = serverSocket.accept();
-
+                        System.out.println("Connected new client");
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -36,14 +43,11 @@ public class ServerStarter extends Application {
             }
         }.start();
 
-        BlockingQueue<Odpowiedz> kolejka = new ArrayBlockingQueue<>(50);
-        //new Producent(kolejka).run();
-        Producent producent = new Producent(null);
-
 
     }
 
     public static void main(String[] args) {
         launch();
     }
+
 }
