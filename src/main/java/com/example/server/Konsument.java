@@ -2,6 +2,7 @@ package com.example.server;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
 public class Konsument implements Runnable {
@@ -19,9 +20,26 @@ public class Konsument implements Runnable {
     @Override
     public void run() {
         try {
-            while (true) {
-                controller.appendText(kolejka.take().getTresc());
+            Set<String> pytania = pytanieOdpowiedz.keySet();
+            for (String pytanie : pytania) {
+                controller.appendQuestion(pytanie);
+
+                while (true){
+                    Odpowiedz odpowiedz = kolejka.take();
+                    String tresc = odpowiedz.getTresc();
+                    String ipAddress = odpowiedz.getIpAddress();
+                    if(tresc != null) {
+                        String[] split = tresc.split(":");
+                        if (split[1].equals(pytanieOdpowiedz.get(pytanie))) {
+                            controller.appendOdpowiedzPoprawna(split[0], ipAddress);
+                            break;
+                        } else {
+                            controller.appendOdpowiedzBledna();
+                        }
+                    }
+                }
             }
+            controller.appendFinalMessage();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

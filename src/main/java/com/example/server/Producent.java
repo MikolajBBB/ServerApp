@@ -19,11 +19,12 @@ public class Producent implements Runnable {
     @Override
     public void run() {
         try {
+            String hostAddress = socket.getInetAddress().getHostAddress();
             InputStream inputStream = socket.getInputStream();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             while (true){
                 String s = bufferedReader.readLine();
-                kolejka.put(new Odpowiedz(s));
+                kolejka.put(new Odpowiedz(s, hostAddress));
             }
         } catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
