@@ -7,6 +7,8 @@ import javafx.stage.Stage;
 import java.net.*;
 
 import java.io.IOException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 public class ServerStarter extends Application {
     @Override
@@ -33,6 +35,12 @@ public class ServerStarter extends Application {
                 }
             }
         }.start();
+
+        BlockingQueue<Odpowiedz> kolejka = new ArrayBlockingQueue<>(50);
+        //new Producent(kolejka).run();
+        Producent producent = new Producent(null);
+
+
     }
 
     public static void main(String[] args) {
