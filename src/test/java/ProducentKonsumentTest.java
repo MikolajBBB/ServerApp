@@ -1,6 +1,7 @@
 import com.example.server.Konsument;
 import com.example.server.Odpowiedz;
 import com.example.server.Producent;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -18,6 +19,7 @@ public class ProducentKonsumentTest {
         new Thread(producent).start();
         new Thread(konsument).start();
         Thread.sleep(1000);
+        Assertions.assertTrue(!kolejka.isEmpty());
     }
 
 }
