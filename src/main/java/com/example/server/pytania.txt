@@ -1,2 +1,0 @@
-Stolica Polski?,Warszawa,
-Najlepszy język programowania?,Kotlin,

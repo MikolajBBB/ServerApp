@@ -5,6 +5,6 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.server.Controller">
    <children>
-      <TextArea fx:id="textArea" layoutX="6.0" layoutY="8.0" prefHeight="385.0" prefWidth="579.0" />
+      <TextArea fx:id="textArea" editable="false" layoutX="6.0" layoutY="8.0" prefHeight="385.0" prefWidth="579.0" />
    </children>
 </Pane>

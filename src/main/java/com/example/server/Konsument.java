@@ -13,7 +13,7 @@ public class Konsument implements Runnable {
 
     String[] subs;
 
-//    Map<String, String> pytanieOdpowiedz = preparePytanieOdpowiedzMap();
+    Map<String, String> pytanieOdpowiedz = preparePytanieOdpowiedzMap();
 
     public Konsument(BlockingQueue<Odpowiedz> kolejka, Controller controller) {
         this.kolejka = kolejka;
@@ -24,24 +24,17 @@ public class Konsument implements Runnable {
     @Override
     public void run() {
         try {
-//            Set<String> pytania = pytanieOdpowiedz.keySet();
-            String s = readFile();
-            String [] subs = s.split(",");
-            int k = 1;
-            int j = 0;
-            for (int i=0;i<subs.length-2;i++) {
-                controller.appendQuestion(subs[j]);
+            Set<String> pytania = pytanieOdpowiedz.keySet();
+            for (String pytanie : pytania) {
+                controller.appendQuestion(pytanie);
                 while (true){
                     Odpowiedz odpowiedz = kolejka.take();
                     String tresc = odpowiedz.getTresc();
                     String ipAddress = odpowiedz.getIpAddress();
                     if(tresc != null) {
                         String[] split = tresc.split(":");
-                        if (split[1].equals(subs[k])){
-                            if(k+2<= subs.length && j+2<= subs.length) {
-                                j = j + 2;
-                                k = k + 2;
-                            }
+                        if (split[1].equals(pytanieOdpowiedz.get(pytanie))){
+                            kolejka.clear();
                             controller.appendOdpowiedzPoprawna(split[0], ipAddress);
                             break;
                         } else {
@@ -51,31 +44,30 @@ public class Konsument implements Runnable {
                 }
             }
             controller.appendFinalMessage();
-        } catch (InterruptedException | IOException e) {
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
-//    Map<String, String> preparePytanieOdpowiedzMap() {
-//        Map<String, String> result = new HashMap<>();
-//        result.put("Stolica Polski?", "Warszawa");
-//        result.put("Najlepszy jezyk programowania?", "Kotlin");
-//        return result;
-//    }
-
-    public String readFile() throws IOException {
-        // Using the Java 7 "try with resource syntax".
-        try (FileReader fr = new FileReader("src/main/java/com/example/server/pytania.txt")) {
+    Map<String, String> preparePytanieOdpowiedzMap() {
+        Map<String, String> result = new HashMap<>();
+        try {
+            FileReader fr = new FileReader("src/main/resources/com/example/server/pytania.txt");
             BufferedReader br = new BufferedReader(fr);
-            StringBuilder content = new StringBuilder();
-            int c;
-            while ((c = br.read()) != -1) {
-                content.append((char)c);
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] split = line.split(",");
+                result.put(split[0], split[1]);
             }
-            return content.toString();
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found");
+        } catch (IOException e) {
+            System.out.println("The problem with reading a file occurred");
         }
-    }
 
+
+        return result;
+    }
 }
 
 
